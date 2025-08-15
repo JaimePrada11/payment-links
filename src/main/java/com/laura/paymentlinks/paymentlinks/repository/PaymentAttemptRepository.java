@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface PaymentAttemptRepository extends JpaRepository<PaymentAttempt, Long> {
 
-    Optional<PaymentAttempt> findByPaymentLinkIdAndIdempotencyKey(Long paymentLinkId, String idempotencyKey);
+    Optional<PaymentAttempt> findByIdempotencyKeyAndPaymentLinkId(String key, Long linkId);
 }
