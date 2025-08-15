@@ -6,6 +6,8 @@ import com.laura.paymentlinks.paymentlinks.repository.MerchantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class MerchantService {
 
@@ -29,4 +31,10 @@ public class MerchantService {
                 ))
                 .orElse(null);
     }
+
+    public Optional<Merchant> findById(Long merchantId) {
+        if (merchantId == null) throw new NullPointerException("id is null");
+        return merchantRepository.findById(merchantId);
+    }
+
 }
