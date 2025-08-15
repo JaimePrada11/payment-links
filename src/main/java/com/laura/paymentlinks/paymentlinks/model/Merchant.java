@@ -1,6 +1,7 @@
 package com.laura.paymentlinks.paymentlinks.model;
 
 
+import com.laura.paymentlinks.paymentlinks.dto.MerchantDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -45,5 +46,20 @@ public class Merchant {
     public void removePaymentLink(PaymentLink link) {
         paymentLinks.remove(link);
         link.setMerchant(null);
+    }
+
+    public MerchantDto toDto() {
+        name = this.name;
+        email = this.email;
+
+        return new MerchantDto( name, email);
+    }
+
+    public Merchant fromDto(MerchantDto dto) {
+        Merchant merchant = new Merchant();
+        merchant.setName(dto.name());
+        merchant.setEmail(dto.email());
+
+        return merchant;
     }
 }

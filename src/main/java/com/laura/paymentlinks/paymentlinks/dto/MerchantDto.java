@@ -11,7 +11,6 @@ public record MerchantDto(
 
         @Email
         @NotNull
-        String email,
+        String email
 
-        List<PaymentLinkDto> paymentLinks
 ) {}
