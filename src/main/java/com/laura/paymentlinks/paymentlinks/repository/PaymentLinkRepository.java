@@ -13,5 +13,9 @@ import java.util.Optional;
 public interface PaymentLinkRepository extends JpaRepository<PaymentLink, Long> {
     Optional<PaymentLink> findByReference(String reference);
 
+    Optional<PaymentLink> findById(Long id);
+
+    List<PaymentLink> findByMerchant(Merchant merchant);
+
     List<PaymentLink> findByStatusAndExpiresAtBefore(PaymentLink.PaymentStatus status, LocalDateTime dateTime);
 }

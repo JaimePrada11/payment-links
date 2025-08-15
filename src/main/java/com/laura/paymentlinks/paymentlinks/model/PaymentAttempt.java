@@ -30,9 +30,6 @@ public class PaymentAttempt {
     @Column(name = "idempotency_key")
     private String idempotencyKey;
 
-    @Column(name = "payment_token")
-    private String paymentToken;
-
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

@@ -1,5 +1,7 @@
 package com.laura.paymentlinks.paymentlinks.model;
 
+import com.laura.paymentlinks.paymentlinks.dto.MerchantDto;
+import com.laura.paymentlinks.paymentlinks.dto.PaymentLinkDto;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import lombok.Getter;
@@ -54,9 +56,9 @@ public class PaymentLink {
     @OneToMany(mappedBy = "paymentLink", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentAttempt> paymentAttempts = new ArrayList<>();
 
-    public PaymentLink(Merchant merchant, String reference, Long amountCents, String currency, LocalDateTime expiresAt) {
+    public PaymentLink(Merchant merchant, Long amountCents, String currency, LocalDateTime expiresAt) {
         this.merchant = merchant;
-        this.reference = reference;
+        this.reference = generateReference();
         this.amountCents = amountCents;
         this.currency = currency;
         this.expiresAt = expiresAt;
@@ -76,4 +78,38 @@ public class PaymentLink {
     public enum PaymentStatus {
         CREATED, PAID, CANCELLED, EXPIRED
     }
+
+    private String generateReference() {
+        return "PL-2025-" + String.format("%06d", System.currentTimeMillis() % 1000000);
+    }
+
+    public PaymentLinkDto toDto() {
+
+        String reference = this.reference;
+        Long amountCents = this.amountCents;
+        String currency = this.currency;
+        String description = this.description;
+        PaymentStatus status = this.status;
+        LocalDateTime expiresAt = this.expiresAt;
+        LocalDateTime paidAt = this.paidAt;
+        LocalDateTime createdAt = this.createdAt;
+
+        return new PaymentLinkDto( reference, amountCents,  currency, description, status, expiresAt, paidAt, createdAt);
+    }
+
+    public static PaymentLink fromDto(PaymentLinkDto dto, Merchant merchant) {
+        PaymentLink link = new PaymentLink(
+                merchant,
+                dto.amountCents(),
+                dto.currency(),
+                dto.expiresAt()
+        );
+        link.setDescription(dto.description());
+        if (dto.status() != null) {
+            link.setStatus(dto.status());
+        }
+        link.setPaidAt(dto.paidAt());
+        return link;
+    }
+
 }

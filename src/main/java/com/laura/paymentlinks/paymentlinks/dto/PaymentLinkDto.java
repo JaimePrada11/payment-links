@@ -12,6 +12,5 @@ public record PaymentLinkDto(
         PaymentLink.PaymentStatus status,
         LocalDateTime expiresAt,
         LocalDateTime paidAt,
-        String metadata,
         LocalDateTime createdAt
 ) {}
