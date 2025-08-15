@@ -32,7 +32,7 @@ public class PaymentAttempt {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt =  LocalDateTime.now();
 
     public enum AttemptStatus {
         SUCCESS, FAILED

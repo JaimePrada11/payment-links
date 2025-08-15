@@ -1,7 +1,9 @@
 package com.laura.paymentlinks.paymentlinks.model;
 
-import com.laura.paymentlinks.paymentlinks.dto.MerchantDto;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.laura.paymentlinks.paymentlinks.dto.PaymentLinkDto;
+import com.laura.paymentlinks.paymentlinks.util.CurrencyConverter;
+import com.laura.paymentlinks.paymentlinks.util.JsonNodeConverter;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import lombok.Getter;
@@ -36,6 +38,7 @@ public class PaymentLink {
     private Long amountCents;
 
     @Column(nullable = false, length = 3)
+    @Convert(converter = CurrencyConverter.class)
     private String currency;
 
     private String description;
@@ -51,10 +54,18 @@ public class PaymentLink {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now()   ;
+
+    @Column(columnDefinition = "json")
+    @Convert(converter = JsonNodeConverter.class)
+    private JsonNode metadata;
 
     @OneToMany(mappedBy = "paymentLink", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentAttempt> paymentAttempts = new ArrayList<>();
+
+    public enum PaymentStatus {
+        CREATED, PAID, CANCELLED, EXPIRED
+    }
 
     public PaymentLink(Merchant merchant, Long amountCents, String currency, LocalDateTime expiresAt) {
         this.merchant = merchant;
@@ -75,13 +86,19 @@ public class PaymentLink {
         attempt.setPaymentLink(null);
     }
 
-    public enum PaymentStatus {
-        CREATED, PAID, CANCELLED, EXPIRED
-    }
+
 
     private String generateReference() {
         return "PL-2025-" + String.format("%06d", System.currentTimeMillis() % 1000000);
     }
+
+    public boolean isPaid() { return status == status.PAID; }
+
+    public boolean isExpired() { return status == status.EXPIRED || LocalDateTime.now().isAfter(expiresAt); }
+
+    public boolean isCancelled() {
+        return status == status.CANCELLED; }
+
 
     public PaymentLinkDto toDto() {
 
