@@ -24,7 +24,7 @@ public class MerchantController {
 
     @GetMapping()
     public ResponseEntity<MerchantDto> getMerchant( @RequestParam String email){
-        MerchantDto dto = merchantService.findByEmail(email);
+        MerchantDto dto = merchantService.findByEmail(email).orElseThrow().toDto();
 
         if (dto == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

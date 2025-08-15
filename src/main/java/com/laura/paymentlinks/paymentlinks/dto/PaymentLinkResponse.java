@@ -8,7 +8,7 @@ public record PaymentLinkResponse(
         String reference,
         String status,
         LocalDateTime expires_at,
-        Integer amount_cents,
+        Long amount_cents,
         String currency,
         String description,
         LocalDateTime paid_at,

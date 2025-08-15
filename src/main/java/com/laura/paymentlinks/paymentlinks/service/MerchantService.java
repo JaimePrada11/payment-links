@@ -4,6 +4,7 @@ import com.laura.paymentlinks.paymentlinks.dto.MerchantDto;
 import com.laura.paymentlinks.paymentlinks.model.Merchant;
 import com.laura.paymentlinks.paymentlinks.repository.MerchantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -12,29 +13,35 @@ import java.util.Optional;
 public class MerchantService {
 
     private final MerchantRepository merchantRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public MerchantService(MerchantRepository merchantRepository) {
+    public MerchantService(MerchantRepository merchantRepository, PasswordEncoder passwordEncoder) {
         this.merchantRepository = merchantRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
-    public MerchantDto findByEmail(String email) {
-        if (email == null) {
-            throw new NullPointerException("email is null");
+        public Merchant create(Merchant merchant) {
+            merchant.setPassword(passwordEncoder.encode(merchant.getPassword()));
+            return merchantRepository.save(merchant);
         }
 
-        return merchantRepository.findByEmail(email)
-                .map( merchant ->  new MerchantDto(
-                        merchant.getName(),
-                        merchant.getEmail()
-                ))
-                .orElse(null);
-    }
+        public Optional<Merchant> findById(Long id) {
+            return merchantRepository.findById(id);
+        }
 
-    public Optional<Merchant> findById(Long merchantId) {
-        if (merchantId == null) throw new NullPointerException("id is null");
-        return merchantRepository.findById(merchantId);
-    }
+        public Optional<Merchant> findByEmail(String email) {
+            return merchantRepository.findByEmail(email);
+        }
+
+        public boolean verificarLogin(String email, String password) {
+            Optional<Merchant> userOpt = merchantRepository.findByEmail(email);
+            return userOpt.map(user -> passwordEncoder.matches(password, user.getPassword())).orElse(false);
+        }
+
+        public boolean existsByEmail(String email) {
+            return merchantRepository.findByEmail(email).isPresent();
+        }
 
 }

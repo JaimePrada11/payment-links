@@ -1,7 +1,7 @@
 package com.laura.paymentlinks.paymentlinks.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.laura.paymentlinks.paymentlinks.dto.PaymentLinkDto;
+import com.laura.paymentlinks.paymentlinks.dto.*;
 import com.laura.paymentlinks.paymentlinks.util.CurrencyConverter;
 import com.laura.paymentlinks.paymentlinks.util.JsonNodeConverter;
 import jakarta.persistence.*;
@@ -96,37 +96,8 @@ public class PaymentLink {
 
     public boolean isExpired() { return status == status.EXPIRED || LocalDateTime.now().isAfter(expiresAt); }
 
-    public boolean isCancelled() {
-        return status == status.CANCELLED; }
+    public boolean isCancelled() { return status == status.CANCELLED; }
 
 
-    public PaymentLinkDto toDto() {
-
-        String reference = this.reference;
-        Long amountCents = this.amountCents;
-        String currency = this.currency;
-        String description = this.description;
-        PaymentStatus status = this.status;
-        LocalDateTime expiresAt = this.expiresAt;
-        LocalDateTime paidAt = this.paidAt;
-        LocalDateTime createdAt = this.createdAt;
-
-        return new PaymentLinkDto( reference, amountCents,  currency, description, status, expiresAt, paidAt, createdAt);
-    }
-
-    public static PaymentLink fromDto(PaymentLinkDto dto, Merchant merchant) {
-        PaymentLink link = new PaymentLink(
-                merchant,
-                dto.amountCents(),
-                dto.currency(),
-                dto.expiresAt()
-        );
-        link.setDescription(dto.description());
-        if (dto.status() != null) {
-            link.setStatus(dto.status());
-        }
-        link.setPaidAt(dto.paidAt());
-        return link;
-    }
 
 }
